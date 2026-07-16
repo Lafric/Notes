@@ -15,11 +15,12 @@ AAG-DT-DEV-DATABRICKS-Schema-SalesGold-Manage
 Der konkrete Catalog- oder Schema-Name sollte enthalten sein, weil eine Gruppe sonst nicht erkennen lässt, für welchen Datenbereich sie gilt.
 
 Vorgeschlagene Rechteprofile
-Rechteprofil Unity-Catalog-Privilegien Zweck
-Browse BROWSE auf Catalog Metadaten und Lineage entdecken, aber keine Daten lesen
-Read USE CATALOG, USE SCHEMA, SELECT; optional READ VOLUME Tabellen und Views lesen
-Write Rechte aus Read plus MODIFY; bei Bedarf CREATE TABLE, CREATE MATERIALIZED VIEW, CREATE VOLUME, WRITE VOLUME Daten verarbeiten und Datenobjekte erstellen
-Manage USE CATALOG, USE SCHEMA, MANAGE plus benötigte Read-/Write-Rechte Berechtigungen verwalten, Ownership übertragen und Objekte administrieren
+| Rechteprofil | Unity-Catalog-Privilegien | Zweck |
+| ------------ | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Browse** | `BROWSE` auf Catalog | Metadaten und Lineage entdecken, aber keine Daten lesen |
+| **Read** | `USE CATALOG`, `USE SCHEMA`, `SELECT`; optional `READ VOLUME` | Tabellen und Views lesen |
+| **Write** | Rechte aus Read plus `MODIFY`; bei Bedarf `CREATE TABLE`, `CREATE MATERIALIZED VIEW`, `CREATE VOLUME`, `WRITE VOLUME` | Daten verarbeiten und Datenobjekte erstellen |
+| **Manage** | `USE CATALOG`, `USE SCHEMA`, `MANAGE` plus benötigte Read-/Write-Rechte | Berechtigungen verwalten, Ownership übertragen und Objekte administrieren |
 
 USE CATALOG und USE SCHEMA sind notwendige Zugangsprivilegien, geben alleine aber noch keinen Zugriff auf Tabellen oder Dateien. Für Tabellenzugriff wird zusätzlich beispielsweise SELECT oder MODIFY benötigt. BROWSE ermöglicht nur die Datenerkennung und Zugriffsanforderung.
 
@@ -44,12 +45,13 @@ Im nächsten Schritt können wir entscheiden, welche konkreten Catalogs und Sche
 
 Aktuell unterscheidet Databricks insbesondere Consumer access, Databricks SQL access und Workspace access. Zusätzlich gibt es administrative Compute-Entitlements für die uneingeschränkte Cluster- und Pool-Erstellung.
 
-AAG-Gruppe Technisches Entitlement Zweck
-AAG-DT-[STAGE]-DATABRICKS-Workspace-ConsumerAccess Consumer access Eingeschränkter Zugang für Business-Nutzer zu freigegebenen Dashboards, Genie Agents und Apps
-AAG-DT-[STAGE]-DATABRICKS-Workspace-DatabricksSQLAccess Databricks SQL access Nutzung von SQL Editor, Queries, Dashboards und SQL Warehouses
-AAG-DT-[STAGE]-DATABRICKS-Workspace-WorkspaceAccess Workspace access Nutzung von Notebooks, Jobs, Pipelines, Modellen und Data-Engineering-/ML-Funktionen
-AAG-DT-[STAGE]-DATABRICKS-Compute-UnrestrictedCreate Allow unrestricted cluster creation Erstellung uneingeschränkter Classic-Compute-Ressourcen und SQL Warehouses
-AAG-DT-[STAGE]-DATABRICKS-InstancePool-Create Allow pool creation Erstellung von Instance Pools
+| AAG-Gruppe                                                | Technisches Entitlement             | Zweck                                                                                         |
+| --------------------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- |
+| `AAG-DT-[STAGE]-DATABRICKS-Workspace-ConsumerAccess`      | Consumer access                     | Eingeschränkter Zugang für Business-Nutzer zu freigegebenen Dashboards, Genie Agents und Apps |
+| `AAG-DT-[STAGE]-DATABRICKS-Workspace-DatabricksSQLAccess` | Databricks SQL access               | Nutzung von SQL Editor, Queries, Dashboards und SQL Warehouses                                |
+| `AAG-DT-[STAGE]-DATABRICKS-Workspace-WorkspaceAccess`     | Workspace access                    | Nutzung von Notebooks, Jobs, Pipelines, Modellen und Data-Engineering-/ML-Funktionen          |
+| `AAG-DT-[STAGE]-DATABRICKS-Compute-UnrestrictedCreate`    | Allow unrestricted cluster creation | Erstellung uneingeschränkter Classic-Compute-Ressourcen und SQL Warehouses                    |
+| `AAG-DT-[STAGE]-DATABRICKS-InstancePool-Create`           | Allow pool creation                 | Erstellung von Instance Pools                                                                 |
 
 Wichtig: Consumer access sollte normalerweise das einzige Access-Entitlement eines reinen Consumers sein. Sobald dieselbe Person zusätzlich Workspace access oder Databricks SQL access erhält, ist sie kein technisch eingeschränkter Consumer mehr.
 
@@ -65,15 +67,16 @@ AAG-DT-DEV-DATABRICKS-Folder-Sales-Edit
 AAG-DT-PROD-DATABRICKS-Job-DailySales-ManageRun
 AAG-DT-PROD-DATABRICKS-SQLWarehouse-BI-Use
 Empfohlene Kern-AAGs
-Schutzobjekt Empfohlene AAG-Profile Bedeutung
-Folder / Notebook View, Run, Edit, Manage Inhalt ansehen, ausführen, bearbeiten oder Berechtigungen verwalten
-Git Folder Read, Run, Edit, Manage Quellcode lesen, ausführen, bearbeiten und Git-Aktionen durchführen
-Job View, ManageRun, Manage Lauf überwachen, Lauf starten/abbrechen oder Jobdefinition verwalten
-Pipeline View, Run, Manage Pipeline ansehen, Updates starten oder Konfiguration verwalten
-Compute Attach, Restart, Manage Notebook anhängen, Compute starten/neustarten oder vollständig administrieren
-SQL Warehouse View, Monitor, Use, Manage Warehouse ansehen, überwachen, SQL ausführen oder administrieren
-Dashboard View, Run, Edit, Manage Dashboard anzeigen, aktualisieren, bearbeiten oder Berechtigungen verwalten
-Query View, Run, Edit, Manage SQL-Abfrage anzeigen, ausführen, bearbeiten oder verwalten
+| Schutzobjekt | Empfohlene AAG-Profile | Bedeutung |
+| --------------------- | ---------------------------------- | ----------------------------------------------------------------------------- |
+| **Folder / Notebook** | `View`, `Run`, `Edit`, `Manage` | Inhalt ansehen, ausführen, bearbeiten oder Berechtigungen verwalten |
+| **Git Folder** | `Read`, `Run`, `Edit`, `Manage` | Quellcode lesen, ausführen, bearbeiten und Git-Aktionen durchführen |
+| **Job** | `View`, `ManageRun`, `Manage` | Lauf überwachen, Lauf starten/abbrechen oder Jobdefinition verwalten |
+| **Pipeline** | `View`, `Run`, `Manage` | Pipeline ansehen, Updates starten oder Konfiguration verwalten |
+| **Compute** | `Attach`, `Restart`, `Manage` | Notebook anhängen, Compute starten/neustarten oder vollständig administrieren |
+| **SQL Warehouse** | `View`, `Monitor`, `Use`, `Manage` | Warehouse ansehen, überwachen, SQL ausführen oder administrieren |
+| **Dashboard** | `View`, `Run`, `Edit`, `Manage` | Dashboard anzeigen, aktualisieren, bearbeiten oder Berechtigungen verwalten |
+| **Query** | `View`, `Run`, `Edit`, `Manage` | SQL-Abfrage anzeigen, ausführen, bearbeiten oder verwalten |
 
 Die Permission-Stufen sind nicht bei allen Schutzobjekten identisch. Jobs verwenden beispielsweise CAN MANAGE RUN, Compute verwendet CAN ATTACH TO und CAN RESTART, während SQL Warehouses CAN MONITOR und CAN USE kennen.
 
