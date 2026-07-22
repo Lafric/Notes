@@ -106,3 +106,24 @@ AAG-DT-PROD-DATABRICKS-SQLWarehouse-BusinessBI-Use
 AAG-DT-PROD-DATABRICKS-SQLWarehouse-BusinessBI-Manage
 
 CAN USE erlaubt das Ausführen von Queries. Es gewährt aber keine automatischen Datenrechte; dafür sind zusätzlich Unity-Catalog-Privilegien erforderlich.
+
+#Zwei Möglichkeiten zur Vergabe der Databricks-Rechte
+| Option | Workspace-ACLs | Unity Catalog |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **1. Declarative Automation Bundles / Asset Bundles** | Berechtigungen direkt im YAML mit `permissions`, zum Beispiel `CAN_VIEW`, `CAN_RUN` oder `CAN_MANAGE` | SQL-Skripte können als Teil des Deployments ausgeführt werden |
+| **2. Getrennte Governance-Verwaltung** | Databricks CLI, zum Beispiel `databricks permissions update` | Native SQL-Befehle wie `GRANT`, `REVOKE` und `SHOW GRANTS` |
+
+Asset Bundles unterstützen die deklarative Definition und Bereitstellung von Databricks-Ressourcen inklusive Workspace-Berechtigungen. Unity-Catalog-Privilegien werden nativ über SQL oder den Catalog Explorer verwaltet, während die Databricks CLI Workspace-ACLs auf konkreten Objekten verwalten kann.
+
+Unsere bevorzugte Variante
+Unity Catalog → SQL GRANT / REVOKE
+Workspace-ACLs → Databricks CLI permissions update
+Asset Bundles → Jobs, Pipelines, Notebooks und Code deployen
+Warum?
+Klare Trennung: Projektteams deployen Ressourcen; Governance verwaltet Berechtigungen.
+Unterschiedliche Lebenszyklen: Code und Pipelines ändern sich häufiger als Rollen und AAG-Rechte.
+Weniger Risiko: Ein normales Anwendungsdeployment verändert nicht versehentlich produktive Berechtigungen.
+Bessere Nachvollziehbarkeit: SQL ist für Unity Catalog leicht lesbar und mit SHOW GRANTS überprüfbar.
+Gezielte Workspace-Änderungen: permissions update kann eine bestimmte ACL aktualisieren, ohne das gesamte Objekt neu zu deployen. Workspace-ACLs gelten für Workspace-Objekte wie Jobs, Pipelines, Compute und SQL Warehouses.
+
+Fazit: Asset Bundles sind nicht grundsätzlich unsicher oder fehleranfällig. Für euer zentrales AUG-/AAG-Governance-Modell ist die getrennte Verwaltung mit SQL für Unity Catalog und Databricks CLI für Workspace-ACLs jedoch übersichtlicher und kontrollierbarer.
