@@ -105,3 +105,15 @@ Permissions can be assigned to Databricks account groups, users and service prin
 - [mpmX installation](https://help.mpmx.com/platform/databricks/installation_and_update)
 - [mpmX security and ACLs](https://help.mpmx.com/platform/databricks/security)
 - [Azure Databricks Apps networking](https://learn.microsoft.com/en-us/azure/databricks/dev-tools/databricks-apps/networking)
+
+The VM hosts Qlik Sense Enterprise and the mpmX Qlik components: scripts, template apps and process-mining visualizations.
+Users access the solution through the Qlik web interface over the intranet. There is no separate mpmX frontend.
+Qlik connects to a Databricks SQL Warehouse using the native Databricks connector, based on ODBC over HTTPS.
+Authentication should use a dedicated OAuth service principal.
+Required permissions:
+CAN USE on the SQL Warehouse
+USE CATALOG
+USE SCHEMA
+SELECT on the required event-log tables or views
+Qlik loads the event data from Databricks. mpmX then generates process variants, lead times, conformance, rework and root-cause metrics inside the Qlik application.
+Network requirements: intranet access to the Qlik VM and outbound HTTPS 443 from the VM to the Databricks workspace.
