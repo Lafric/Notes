@@ -1,0 +1,167 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type": "string",
+      "defaultValue": "db2aci",
+      "metadata": {
+        "description": "ACI container group name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "North Europe",
+      "metadata": {
+        "description": "Azure region. Use a region that supports Confidential ACI."
+      }
+    },
+    "db2Password": {
+      "type": "secureString",
+      "metadata": {
+        "description": "Password for the Db2 db2inst1 instance user."
+      }
+    }
+  },
+  "variables": {
+    "image": "icr.io/db2_community/db2:12.1.5.0",
+    "db2Port": 50000
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "confidentialComputeProperties": {
+          "ccePolicy": ""
+        },
+        "containers": [
+          {
+            "name": "db2",
+            "properties": {
+              "image": "[variables('image')]",
+              "ports": [
+                {
+                  "port": "[variables('db2Port')]",
+                  "protocol": "TCP"
+                }
+              ],
+              "environmentVariables": [
+                {
+                  "name": "LICENSE",
+                  "value": "accept"
+                },
+                {
+                  "name": "DB2INSTANCE",
+                  "value": "db2inst1"
+                },
+                {
+                  "name": "DB2INST1_PASSWORD",
+                  "secureValue": "[parameters('db2Password')]"
+                },
+                {
+                  "name": "DBNAME",
+                  "value": "testdb"
+                },
+                {
+                  "name": "BLU",
+                  "value": "false"
+                },
+                {
+                  "name": "ENABLE_ORACLE_COMPATIBILITY",
+                  "value": "false"
+                },
+                {
+                  "name": "UPDATEAVAIL",
+                  "value": "NO"
+                },
+                {
+                  "name": "TO_CREATE_SAMPLEDB",
+                  "value": "false"
+                },
+                {
+                  "name": "REPODB",
+                  "value": "false"
+                },
+                {
+                  "name": "IS_OSXFS",
+                  "value": "false"
+                },
+                {
+                  "name": "PERSISTENT_HOME",
+                  "value": "true"
+                },
+                {
+                  "name": "HADR_ENABLED",
+                  "value": "false"
+                },
+                {
+                  "name": "ETCD_ENDPOINT",
+                  "value": ""
+                },
+                {
+                  "name": "ETCD_USERNAME",
+                  "value": ""
+                },
+                {
+                  "name": "ETCD_PASSWORD",
+                  "value": ""
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 4,
+                  "memoryInGB": 8
+                }
+              },
+              "securityContext": {
+                "privileged": true
+              },
+              "volumeMounts": [
+                {
+                  "name": "db2data",
+                  "mountPath": "/database",
+                  "readOnly": false
+                }
+              ]
+            }
+          }
+        ],
+        "sku": "Confidential",
+        "osType": "Linux",
+        "restartPolicy": "Always",
+        "ipAddress": {
+          "type": "Public",
+          "ports": [
+            {
+              "port": "[variables('db2Port')]",
+              "protocol": "TCP"
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "name": "db2data",
+            "emptyDir": {}
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "containerIPv4Address": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('name')), '2023-05-01').ipAddress.ip]"
+    },
+    "db2Port": {
+      "type": "int",
+      "value": "[variables('db2Port')]"
+    },
+    "jdbcUrl": {
+      "type": "string",
+      "value": "[format('jdbc:db2://{0}:{1}/testdb', reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('name')), '2023-05-01').ipAddress.ip, variables('db2Port'))]"
+    }
+  }
+}
